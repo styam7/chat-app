@@ -1,0 +1,4 @@
+{
+    "mongoURL": "mongodb+srv://satyam:QXHkssi1HMXWIE4L@devconnector.m9plr.mongodb.net/chatapp?retryWrites=true&w=majority",
+    "jwtSecret": "eyJhbGciOiJIUzI1NiJ9.eyJSb2xlIjoiQWRtaW4iLCJJc3N1ZXIiOiJJc3N1ZXIiLCJVc2VybmFtZSI6IkphdmFJblVzZSIsImV4cCI6MTY1ODU5ODc3NCwiaWF0IjoxNjU4NTk4Nzc0fQ.g6tLAABqhGSOGEzDsYOGRP6Mdp2DHxqkEY_Eq2MlYaE"
+}
