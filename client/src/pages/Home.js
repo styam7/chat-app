@@ -8,8 +8,8 @@ import {
   Tab,
   TabPanel,
 } from "@chakra-ui/react";
-import Login from "../components/Login";
-import SignUp from "../components/SignUp";
+import Login from "../components/auth/Login";
+import SignUp from "../components/auth/SignUp";
 
 const Home = () => {
   return (
