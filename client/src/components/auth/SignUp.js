@@ -11,6 +11,7 @@ import { useState } from "react";
 import axios from "axios";
 import { useToast } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
+
 const SignUp = () => {
   const toast = useToast();
   const navigate = useNavigate();
@@ -80,6 +81,7 @@ const SignUp = () => {
     setFormData({ ...formData, [id]: value });
   };
   const handleSignUp = async () => {
+    setLoading(true)
     if (!name || !email || !password || !confirmPassword) {
       toast({
         title: "Please Fill all the Feilds",
