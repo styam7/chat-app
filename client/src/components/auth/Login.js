@@ -73,6 +73,7 @@ const Login = () => {
         <FormLabel>Email</FormLabel>
         <Input
           name="email"
+          value={email}
           placeholder="Enter your email"
           onChange={(e) => handleChange(e)}
         />
@@ -82,6 +83,7 @@ const Login = () => {
         <InputGroup>
           <Input
             name="password"
+            value={password}
             type={show ? "text" : "password"}
             placeholder="Enter your Password"
             onChange={(e) => handleChange(e)}
@@ -100,6 +102,16 @@ const Login = () => {
         isLoading={loading}
       >
         Login
+      </Button>
+      <Button
+        variant="solid"
+        colorScheme="red"
+        width="100%"
+        onClick={() => {
+          setFormData({...formData, email: "guest@example.com", password: "123456"})
+        }}
+      >
+        Get Guest User Credentials
       </Button>
     </VStack>
   );

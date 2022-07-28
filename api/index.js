@@ -2,6 +2,7 @@ import express from "express";
 import dotenv from "dotenv"
 import { connectDB } from "./config/db.js";
 import authRouter from "./routes/auth.js"
+import userRouter from "./routes/users.js"
 import cookieParser from "cookie-parser";
 
 connectDB()
@@ -12,6 +13,7 @@ app.use(cookieParser())
 
 
 app.use('/api/auth', authRouter)
+app.use('/api/users', userRouter)
 
 //error handling middleware 
 app.use( (err, req, res, next) => {
