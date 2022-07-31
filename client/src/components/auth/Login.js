@@ -18,8 +18,8 @@ const Login = () => {
   const [show, setShow] = useState(false)
   const [loading, setLoading] = useState(false)
   const [formData, setFormData] = useState({
-    email: null,
-    password: null,
+    email: undefined,
+    password: undefined,
   });
   const { email, password } = formData
 

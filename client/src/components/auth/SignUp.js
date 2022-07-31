@@ -20,10 +20,10 @@ const SignUp = () => {
   const [loading, setLoading] = useState(false);
 
   const [formData, setFormData] = useState({
-    name: null,
-    email: null,
-    password: null,
-    confirmPassword: null,
+    name: undefined,
+    email: undefined,
+    password: undefined,
+    confirmPassword: undefined,
     pic: undefined,
   });
 
