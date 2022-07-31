@@ -8,8 +8,9 @@ import cookieParser from "cookie-parser";
 connectDB()
 const app = express()
 dotenv.config()
-app.use(express.json())
 app.use(cookieParser())
+app.use(express.json())
+
 
 
 app.use('/api/auth', authRouter)

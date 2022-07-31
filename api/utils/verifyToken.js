@@ -1,6 +1,6 @@
 import jwt from 'jsonwebtoken'
 import { createError } from './error.js'
-import config from config;
+import config from "config";
 
 const secretKey = config.get("jwtSecret")
 
