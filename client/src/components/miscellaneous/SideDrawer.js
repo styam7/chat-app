@@ -10,6 +10,7 @@ import {
   MenuDivider,
   MenuItem,
   MenuList,
+  Spinner,
   Tooltip,
   useDisclosure,
   useToast,
@@ -85,9 +86,10 @@ const SideDrawer = () => {
   const accessChat = async (userId) => {
     try {
       setLoadingChat(true);
-      const res = await axios.post(`/chat`, {userId});
+      const {data} = await axios.post(`/chat`, {userId});
+      if(!chats.find((c) =>c._id === data._id)) setChats([data, ...chats])
       setLoadingChat(false);
-      setSelectedChat(res.data);
+      setSelectedChat(data);
       onClose();
     } catch (err) {
       toast({
@@ -172,6 +174,7 @@ const SideDrawer = () => {
                 />
               ))
             )}
+            {loadingChat && <Spinner ml="auto" display="flex" />}
           </DrawerBody>
         </DrawerContent>
       </Drawer>
