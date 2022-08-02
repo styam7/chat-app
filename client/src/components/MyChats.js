@@ -7,7 +7,7 @@ import ChatLoading from './ChatLoading'
 import { getSender } from '../config/ChatLogics'
 import GroupChatModal from './miscellaneous/GroupChatModal'
 
-const MyChats = () => {
+const MyChats = ({ fetchAgain }) => {
 
   const toast = useToast()
   const [loggedUser, setLoggedUser] = useState()
@@ -32,7 +32,7 @@ const MyChats = () => {
   useEffect(() => {
     setLoggedUser(JSON.parse(localStorage.getItem("userInfo")));
     fetchChats()
-  }, [])
+  }, [fetchAgain])
 
   return (
     <Box
