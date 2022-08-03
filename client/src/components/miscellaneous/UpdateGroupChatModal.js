@@ -30,8 +30,6 @@ const UpdateGroupChatModal = ({ fetchAgain, setFetchAgain }) => {
     const toast = useToast()
     const { selectedChat, setSelectedChat, user } = ChatState()
 
-    const handleRemove = () => { }
-
     const handleRename = async () => {
         if (!groupChatName) return
 
@@ -85,7 +83,7 @@ const UpdateGroupChatModal = ({ fetchAgain, setFetchAgain }) => {
     }
 
     const handleAddUser = async (userToAdd) => {
-        if(selectedChat.users.find((u) => u._id === userToAdd._id)){
+        if (selectedChat.users.find((u) => u._id === userToAdd._id)) {
             toast({
                 title: "User already in group!",
                 status: "error",
@@ -95,7 +93,7 @@ const UpdateGroupChatModal = ({ fetchAgain, setFetchAgain }) => {
             });
             return
         }
-        if(selectedChat.groupAdmin._id !== user._id ){
+        if (selectedChat.groupAdmin._id !== user._id) {
             toast({
                 title: "Only Admins can add someone",
                 status: "error",
@@ -108,11 +106,45 @@ const UpdateGroupChatModal = ({ fetchAgain, setFetchAgain }) => {
         try {
             setLoading(true)
 
-            const { data } = await axios.put('/chat/groupAdd', {
+            const { data } = await axios.put('/chat/groupadd', {
                 chatId: selectedChat._id,
                 userId: userToAdd._id
             })
             setSelectedChat(data)
+            setFetchAgain(!fetchAgain)
+            setLoading(false)
+        } catch (err) {
+            toast({
+                title: "Error Occured!",
+                description: err.response.data.message,
+                status: "error",
+                duration: 5000,
+                isClosable: true,
+                position: "bottom",
+            });
+            setLoading(false)
+        }
+    }
+
+    const handleRemove = async (userToRemove) => {
+        if (selectedChat.groupAdmin._id !== user._id && userToRemove._id !== user._id) {
+            toast({
+                title: "Only admins can remove accounts",
+                status: "error",
+                duration: 5000,
+                isClosable: true,
+                position: "bottom",
+            });
+            return
+        }
+        try {
+            setLoading(true)
+
+            const { data } = await axios.put('/chat/groupremove', {
+                chatId: selectedChat._id,
+                userId: userToRemove._id
+            })
+            userToRemove._id === user._id ? setSelectedChat() : setSelectedChat(data)
             setFetchAgain(!fetchAgain)
             setLoading(false)
         } catch (err) {
