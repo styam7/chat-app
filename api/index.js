@@ -4,6 +4,7 @@ import { connectDB } from "./config/db.js";
 import authRouter from "./routes/auth.js"
 import userRouter from "./routes/users.js"
 import chatRouter from './routes/chats.js'
+import messageRouter from './routes/messages.js'
 import cookieParser from "cookie-parser";
 
 connectDB()
@@ -17,6 +18,7 @@ app.use(express.json())
 app.use('/api/auth', authRouter)
 app.use('/api/users', userRouter)
 app.use('/api/chat', chatRouter)
+app.use('/api/message', messageRouter)
 
 //error handling middleware 
 app.use((err, req, res, next) => {
