@@ -14,11 +14,17 @@ import { getSender, getSenderFull } from "../config/ChatLogics";
 import ProfileModal from "../components/miscellaneous/ProfileModal";
 import UpdateGroupChatModal from "./miscellaneous/UpdateGroupChatModal";
 import axios from "axios";
+import ScrollableChat from "./ScrollableChat";
+import { io } from "socket.io-client";
+
+const ENDPOINT = "http://localhost:5000";
+var socket, selectedChatCompare;
 
 const SingleChat = ({ fetchAgain, setFetchAgain }) => {
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(false);
   const [newMessage, setNewMessage] = useState();
+  const [soketConnected, setSocketConnected] = useState(false)
 
   const toast = useToast();
   const { user, selectedChat, setSelectedChat } = ChatState();
@@ -29,9 +35,10 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
     try {
       setLoading(true);
 
-      const { data } = axios.get(`/message/${selectedChat._id}`);
+      const { data } = await axios.get(`/message/${selectedChat._id}`);
       setMessages(data);
       setLoading(false);
+      socket.emit("join chat", selectedChat._id)
     } catch (err) {
       toast({
         title: "Error Occured!",
@@ -46,8 +53,26 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
   };
 
   useEffect(() => {
+    socket = io(ENDPOINT)
+    socket.emit("setup", user)
+    socket.on("connection", () => setSocketConnected(true))
+  }, [])
+
+  useEffect(() => {
     fetchMessages();
+    selectedChatCompare = selectedChat
   }, [selectedChat]);
+
+  useEffect(() => {
+    socket.on("message recieved", ( newMessageRecieved) => {
+      if(!selectedChatCompare || selectedChatCompare._id !== newMessageRecieved.chat._id){
+        //give notification
+      }
+      else{
+        setMessages([...messages, newMessageRecieved])
+      }
+    })
+  })
 
   const sendMessage = async (e) => {
     if (e.key === "Enter" && newMessage) {
@@ -57,7 +82,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
           content: newMessage,
           chatId: selectedChat._id,
         });
-        console.log(data);
+        socket.emit("new message", data)
         setMessages([...messages, data]);
       } catch (err) {
         toast({
@@ -129,7 +154,18 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
                 margin="auto"
               />
             ) : (
-              <></>
+              <Box
+                display="flex"
+                flexDir="column"
+                overflowY="scroll"
+                sx={{
+                  '&::-webkit-scrollbar': {
+                    width: 'none',
+                  }
+                }}
+              >
+                <ScrollableChat messages={messages} />
+              </Box>
             )}
             <FormControl onKeyDown={sendMessage} isRequired mt={3}>
               <Input
