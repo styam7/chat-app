@@ -13,6 +13,8 @@ import { ArrowBackIcon } from "@chakra-ui/icons";
 import { getSender, getSenderFull } from "../config/ChatLogics";
 import ProfileModal from "../components/miscellaneous/ProfileModal";
 import UpdateGroupChatModal from "./miscellaneous/UpdateGroupChatModal";
+import animationData from "../animations/typing.json";
+import Lottie from "react-lottie";
 import axios from "axios";
 import ScrollableChat from "./ScrollableChat";
 import { io } from "socket.io-client";
@@ -25,6 +27,17 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
   const [loading, setLoading] = useState(false);
   const [newMessage, setNewMessage] = useState();
   const [soketConnected, setSocketConnected] = useState(false)
+  const [typing, setTyping] = useState(false)
+  const [isTyping, setIsTyping] = useState(false)
+
+  const defaultOptions = {
+    loop: true,
+    autoplay: true,
+    animationData: animationData,
+    rendererSettings: {
+      preserveAspectRatio: "xMidYMid slice",
+    },
+  };
 
   const toast = useToast();
   const { user, selectedChat, setSelectedChat } = ChatState();
@@ -55,7 +68,9 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
   useEffect(() => {
     socket = io(ENDPOINT)
     socket.emit("setup", user)
-    socket.on("connection", () => setSocketConnected(true))
+    socket.on("connected", () => setSocketConnected(true))
+    socket.on("typing", () => setIsTyping(true))
+    socket.on("stop typing", () => setIsTyping(false))
   }, [])
 
   useEffect(() => {
@@ -64,11 +79,11 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
   }, [selectedChat]);
 
   useEffect(() => {
-    socket.on("message recieved", ( newMessageRecieved) => {
-      if(!selectedChatCompare || selectedChatCompare._id !== newMessageRecieved.chat._id){
+    socket.on("message recieved", (newMessageRecieved) => {
+      if (!selectedChatCompare || selectedChatCompare._id !== newMessageRecieved.chat._id) {
         //give notification
       }
-      else{
+      else {
         setMessages([...messages, newMessageRecieved])
       }
     })
@@ -76,6 +91,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
 
   const sendMessage = async (e) => {
     if (e.key === "Enter" && newMessage) {
+      socket.emit("stop typing", selectedChat._id)
       try {
         setNewMessage("");
         const { data } = await axios.post("/message", {
@@ -98,6 +114,25 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
   };
   const typingHandler = async (e) => {
     setNewMessage(e.target.value);
+
+    if (!soketConnected) return
+
+    if (!typing) {
+      setTyping(true)
+      socket.emit("typing", selectedChat._id)
+    }
+    let lastTypingTime = new Date().getTime()
+    var timerLength = 3000
+
+    setTimeout(() => {
+      var timeNow = new Date().getTime()
+      var timeDiff = timeNow - lastTypingTime
+
+      if (timeDiff >= timerLength && typing) {
+        socket.emit("stop typing", selectedChat._id)
+        setTyping(false)
+      }
+    }, timerLength)
   };
   return (
     <>
@@ -160,7 +195,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
                 overflowY="scroll"
                 sx={{
                   '&::-webkit-scrollbar': {
-                    width: 'none',
+                    display: 'none',
                   }
                 }}
               >
@@ -168,6 +203,15 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
               </Box>
             )}
             <FormControl onKeyDown={sendMessage} isRequired mt={3}>
+              {isTyping ?
+                <Lottie
+                  options={defaultOptions}
+                  height={30}
+                  width={60}
+                  style={{ marginBottom: 15, marginLeft: 0 }}
+                /> 
+                :
+                (<></>)}
               <Input
                 variant="filled"
                 bg="#E0E0E0"

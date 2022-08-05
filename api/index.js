@@ -41,20 +41,28 @@ const io = new Server(server, {
     }
 })
 
-io.on("connection", (soket) => {
-   console.log("connected to soket.io")
+io.on("connection", (socket) => {
+   console.log("connected to socket.io")
 
-   soket.on('setup', (userData) => {
-    soket.join(userData._id)
-    soket.emit("connected")
+   socket.on('setup', (userData) => {
+    socket.join(userData._id)
+    socket.emit("connected")
    })
 
-   soket.on('join chat', (room) => {
-    soket.join(room)
+   socket.on('join chat', (room) => {
+    socket.join(room)
     console.log("User joined room: " + room)
    })
+   
+   socket.on("typing", (room) => {
+    socket.in(room).emit("typing")
+   })
 
-   soket.on('new message', (newMessageRecieved) => {
+   socket.on("stop typing", (room) => {
+    socket.in(room).emit("stop typing")
+   })
+
+   socket.on('new message', (newMessageRecieved) => {
 
     var chat = newMessageRecieved.chat
     if(!chat.users) return console.log("chat.user not defined")
@@ -62,7 +70,7 @@ io.on("connection", (soket) => {
     chat.users.forEach((user) => {
         if(user._id == newMessageRecieved.sender._id) return;
 
-        soket.in(user._id).emit("message recieved", newMessageRecieved)
+        socket.in(user._id).emit("message recieved", newMessageRecieved)
     })
 
    })
