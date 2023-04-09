@@ -25,7 +25,7 @@ const Home = () => {
         borderWidth="1px"
       >
         <Text fontSize="4xl" fontFamily="Work sans">
-          Talk-A-Tive
+          Duso-Mu
         </Text>
       </Box>
       <Box p={4} bg="white" w="100%" borderRadius="lg" borderWidth="1px">
